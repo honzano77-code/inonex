@@ -77,6 +77,7 @@ h1 { font-family: var(--font-display); font-weight: 700; font-size: clamp(40px, 
 .ladder .wire { stroke-width: 1.5; }
 .ladder .on { stroke: var(--hero-accent); }
 .ladder .coil { stroke: var(--hero-accent); stroke-width: 2; fill: none; }
+.ladder .coil-off { stroke: var(--hero-muted); stroke-width: 2; fill: none; }
 
 section { padding-block: 64px; }
 section + section { border-top: 1px solid var(--line); }
@@ -104,6 +105,7 @@ h2 { font-family: var(--font-display); font-weight: 600; font-size: clamp(30px, 
 dl.facts { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 8px 20px; }
 dl.facts dt { color: var(--muted); font-size: 14px; }
 dl.facts dd { margin: 0; font-family: var(--font-mono); font-size: 15px; }
+.label { color: var(--muted); font-size: 14px; }
 
 footer { background: var(--hero-bg); color: var(--hero-muted); font-size: 13px; }
 footer .wrap { padding-block: 22px; display: flex; flex-wrap: wrap; gap: 8px 24px; justify-content: space-between; }
@@ -138,25 +140,33 @@ footer .wrap { padding-block: 22px; display: flex; flex-wrap: wrap; gap: 8px 24p
         <p class="lead">Programujeme PLC Simatic, navrhujeme vizualizace a průmyslové sítě. Od prvního návrhu po uvedení do provozu.</p>
         <a class="btn" href="#kontakt">Napište nám</a>
       </div>
-      <svg class="ladder" viewBox="0 0 420 250" role="img" aria-label="Schéma žebříkového programu PLC se vstupy, výstupem a cívkou">
+      <svg class="ladder" viewBox="0 0 420 250" role="img" aria-label="Schéma žebříkového programu PLC: tři příčky, každá se vstupním kontaktem a výstupní cívkou">
+        <!-- napájecí kolejnice -->
         <line class="rail" x1="20" y1="14" x2="20" y2="236"/>
         <line class="rail" x1="400" y1="14" x2="400" y2="236"/>
-        <!-- rung 1 -->
-        <path class="wire on pulse" d="M20 50 H110 M150 50 H400"/>
+
+        <!-- příčka 1: spínací kontakt I0.0 -> cívka Q0.0 (sepnuto) -->
+        <path class="wire on pulse" d="M20 50 H110 M150 50 H264 M306 50 H400"/>
         <path class="coil" d="M110 36 V64 M150 36 V64"/>
         <path class="coil" d="M270 36 Q258 50 270 64 M300 36 Q312 50 300 64"/>
         <text x="112" y="26">I0.0</text><text x="262" y="26">Q0.0</text>
-        <!-- rung 2 -->
-        <path class="wire" d="M20 125 H90 M130 125 H210 M250 125 H400"/>
-        <path class="rail" d="M90 111 V139 M130 111 V139"/>
-        <path class="rail" d="M210 111 V139 M250 111 V139"/><path class="rail" d="M205 146 L255 104"/>
-        <text x="92" y="101">I0.1</text><text x="212" y="101">M1.0</text>
-        <!-- rung 3 -->
-        <path class="wire" d="M20 200 H150 M250 200 H400"/>
-        <rect class="rail" x="150" y="176" width="100" height="48"/>
-        <text x="172" y="196">TON</text><text x="172" y="214">T#5s</text>
-        <text x="20" y="246">24 V DC</text>
-      </svg>
+
+        <!-- příčka 2: spínací kontakt I0.1 + rozpínací kontakt M1.0 -> cívka Q0.1 -->
+        <path class="wire" d="M20 125 H70 M110 125 H170 M210 125 H264 M306 125 H400"/>
+        <path class="rail" d="M70 111 V139 M110 111 V139"/>
+        <path class="rail" d="M170 111 V139 M210 111 V139"/><path class="rail" d="M173 137 L207 113"/>
+        <path class="coil-off" d="M270 111 Q258 125 270 139 M300 111 Q312 125 300 139"/>
+        <text x="72" y="101">I0.1</text><text x="172" y="101">M1.0</text><text x="262" y="101">Q0.1</text>
+
+        <!-- příčka 3: spínací kontakt I0.2 spouští časovač TON, jeho výstup Q budí cívku Q0.2 -->
+        <path class="wire" d="M20 200 H40 M80 200 H120 M240 200 H264 M306 200 H400"/>
+        <path class="rail" d="M40 186 V214 M80 186 V214"/>
+        <rect class="rail" x="120" y="172" width="120" height="56"/>
+        <path class="coil-off" d="M270 186 Q258 200 270 214 M300 186 Q312 200 300 214"/>
+        <text x="40" y="178">I0.2</text><text x="262" y="178">Q0.2</text>
+        <text x="180" y="190" text-anchor="middle">TON</text>
+        <text x="180" y="220" text-anchor="middle">PT T#5s</text>
+        <text x="126" y="196">IN</text><text x="234" y="196" text-anchor="end">Q</text>      </svg>
     </div>
   </div>
 
@@ -214,16 +224,16 @@ footer .wrap { padding-block: 22px; display: flex; flex-wrap: wrap; gap: 8px 24p
       <p class="sub">Popište nám, co potřebujete vyřešit. Ozveme se s dotazy nebo s nabídkou.</p>
       <div class="contact">
         <div>
-          <div style="color:var(--muted);font-size:14px">E-mail</div>
+          <div class="label">E-mail</div>
           <p class="mail" id="mail">info@inonex.cz</p>
           <button class="copy" id="copy" type="button">Zkopírovat adresu</button>
           <p style="margin:14px 0 0;font-size:14px"><a href="mailto:info@inonex.cz">Otevřít v e-mailovém programu</a></p>
         </div>
         <div>
-          <div style="color:var(--muted);font-size:14px;margin-bottom:10px">Firemní údaje</div>
+          <div class="label" style="margin-bottom:10px">Firemní údaje</div>
           <dl class="facts">
             <dt>Společnost</dt><dd>INONEX Controls s.r.o.</dd>
-            <dt>IČO</dt><dd id="ico">301 03 894</dd>
+            <dt>IČO</dt><dd>301 03 894</dd>
           </dl>
           <p style="margin:16px 0 0;font-size:14px;color:var(--muted)">Společnost je zapsaná v obchodním rejstříku, spisová značka C 56568, vedeném Krajským soudem v Ústí nad Labem.</p>
         </div>
@@ -244,11 +254,12 @@ footer .wrap { padding-block: 22px; display: flex; flex-wrap: wrap; gap: 8px 24p
   var btn = document.getElementById("copy");
   btn.addEventListener("click", function () {
     var text = "info@inonex.cz";
-    function done() { btn.textContent = "Zkopírováno"; setTimeout(function () { btn.textContent = "Zkopírovat adresu"; }, 1800); }
+    function restore() { setTimeout(function () { btn.textContent = "Zkopírovat adresu"; }, 1800); }
+    function done() { btn.textContent = "Zkopírováno"; restore(); }
     function fallback() {
       var r = document.createRange(); r.selectNodeContents(document.getElementById("mail"));
       var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
-      btn.textContent = "Adresa je označená";
+      btn.textContent = "Adresa je označená"; restore();
     }
     try { navigator.clipboard.writeText(text).then(done, fallback); } catch (e) { fallback(); }
   });
