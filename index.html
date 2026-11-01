@@ -1,13 +1,247 @@
-<!DOCTYPE html>
-<html lang="cs">
-<head>
-  <meta charset="UTF-8">
-  <title>inonex.cz</title>
-  <link rel="stylesheet" href="style.css">
-  <script src="script.js" defer></script>
-</head>
-<body>
-  <h2>inonex.cz</h2>
-  <p>průmyslová automatizace</p>
-</body>
-</html>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>INONEX Controls</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: jednostránkový web, tmavá hlavička s žebříčkovým schématem (ladder), pod ní světlé sekce v mřížce. */
+:root {
+  --bg: #eef1f3;
+  --surface: #ffffff;
+  --fg: #14202b;
+  --muted: #55636f;
+  --line: #cdd5db;
+  --accent: #0b6e78;
+  --accent-fg: #ffffff;
+  --hero-bg: #12202b;
+  --hero-fg: #e8eef2;
+  --hero-muted: #9db0bc;
+  --hero-accent: #4fd1c5;
+  --font-display: "Barlow Condensed", "Arial Narrow", sans-serif;
+  --font-body: "IBM Plex Sans", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e171e; --surface: #15222c; --fg: #e6edf1; --muted: #93a5b1; --line: #263642;
+    --accent: #4fd1c5; --accent-fg: #0e171e; --hero-bg: #0a1218;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0e171e; --surface: #15222c; --fg: #e6edf1; --muted: #93a5b1; --line: #263642;
+  --accent: #4fd1c5; --accent-fg: #0e171e; --hero-bg: #0a1218;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--fg);
+  font-family: var(--font-body); font-size: 16px; line-height: 1.6;
+}
+.wrap {
+  max-width: 1080px; margin-inline: auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+a { color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+header.top { background: var(--hero-bg); color: var(--hero-fg); }
+header.top .wrap { display: flex; flex-wrap: wrap; gap: 12px 32px; align-items: center; justify-content: space-between; padding-block: 18px; }
+.logo { font-family: var(--font-display); font-weight: 700; font-size: 26px; letter-spacing: .06em; text-transform: uppercase; text-decoration: none; }
+.logo span { color: var(--hero-accent); }
+nav { display: flex; flex-wrap: wrap; gap: 6px 22px; font-size: 14px; }
+nav a { text-decoration: none; color: var(--hero-muted); }
+nav a:hover { color: var(--hero-fg); }
+
+.hero { background: var(--hero-bg); color: var(--hero-fg); border-top: 1px solid #ffffff14; }
+.hero .wrap { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 40px; align-items: center; padding-block: 56px 64px; }
+.eyebrow { font-family: var(--font-mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--hero-accent); margin: 0 0 14px; }
+h1 { font-family: var(--font-display); font-weight: 700; font-size: clamp(40px, 6.4vw, 68px); line-height: 1; letter-spacing: .01em; margin: 0 0 18px; text-wrap: balance; }
+.lead { color: var(--hero-muted); max-width: 52ch; margin: 0 0 28px; font-size: 17px; }
+.btn { display: inline-block; background: var(--hero-accent); color: #0a1218; font-weight: 600; text-decoration: none; padding: 12px 22px; border-radius: 3px; }
+.btn:hover { filter: brightness(1.08); }
+.ladder { width: 100%; height: auto; max-width: 100%; }
+.ladder text { font-family: var(--font-mono); font-size: 11px; fill: var(--hero-muted); }
+.ladder .rail, .ladder .wire { stroke: var(--hero-muted); stroke-width: 2; fill: none; }
+.ladder .wire { stroke-width: 1.5; }
+.ladder .on { stroke: var(--hero-accent); }
+.ladder .coil { stroke: var(--hero-accent); stroke-width: 2; fill: none; }
+
+section { padding-block: 64px; }
+section + section { border-top: 1px solid var(--line); }
+h2 { font-family: var(--font-display); font-weight: 600; font-size: clamp(30px, 4vw, 42px); line-height: 1.05; letter-spacing: .01em; margin: 0 0 10px; text-wrap: balance; }
+.sub { color: var(--muted); max-width: 60ch; margin: 0 0 36px; }
+
+.services { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
+.svc { background: var(--surface); border: 1px solid var(--line); padding: 24px; min-width: 0; }
+.svc h3 { font-family: var(--font-display); font-weight: 600; font-size: 24px; margin: 0 0 8px; letter-spacing: .02em; }
+.svc p { margin: 0; color: var(--muted); font-size: 15px; }
+.svc .tag { display: block; font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; }
+
+.plc { width: 100%; border-collapse: collapse; font-size: 15px; background: var(--surface); border: 1px solid var(--line); }
+.plc-scroll { overflow-x: auto; }
+.plc th, .plc td { text-align: left; padding: 14px 18px; border-bottom: 1px solid var(--line); vertical-align: top; }
+.plc th { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); font-weight: 500; }
+.plc td:first-child { font-family: var(--font-mono); font-weight: 500; white-space: nowrap; }
+.plc tr:last-child td { border-bottom: 0; }
+
+.contact { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 32px; }
+.contact > div { min-width: 0; }
+.mail { font-family: var(--font-mono); font-size: clamp(18px, 3vw, 24px); word-break: break-all; margin: 6px 0 12px; }
+.copy { font: inherit; font-size: 14px; background: transparent; color: var(--accent); border: 1px solid var(--accent); border-radius: 3px; padding: 8px 16px; cursor: pointer; }
+.copy:hover { background: var(--accent); color: var(--accent-fg); }
+dl.facts { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 8px 20px; }
+dl.facts dt { color: var(--muted); font-size: 14px; }
+dl.facts dd { margin: 0; font-family: var(--font-mono); font-size: 15px; }
+
+footer { background: var(--hero-bg); color: var(--hero-muted); font-size: 13px; }
+footer .wrap { padding-block: 22px; display: flex; flex-wrap: wrap; gap: 8px 24px; justify-content: space-between; }
+
+@media (max-width: 760px) {
+  .hero .wrap { grid-template-columns: minmax(0, 1fr); padding-block: 40px 44px; }
+  section { padding-block: 48px; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .ladder .pulse { stroke-dasharray: 6 8; animation: flow 1.6s linear infinite; }
+  @keyframes flow { to { stroke-dashoffset: -28; } }
+}
+</style>
+
+<header class="top">
+  <div class="wrap">
+    <a class="logo" href="#top">INONEX <span>Controls</span></a>
+    <nav aria-label="Hlavní navigace">
+      <a href="#sluzby">Služby</a>
+      <a href="#technologie">Technologie</a>
+      <a href="#kontakt">Kontakt</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+  <div class="hero">
+    <div class="wrap">
+      <div>
+        <p class="eyebrow">Průmyslová automatizace</p>
+        <h1>Řízení strojů a linek.</h1>
+        <p class="lead">Programujeme PLC Simatic, navrhujeme vizualizace a průmyslové sítě. Od prvního návrhu po uvedení do provozu.</p>
+        <a class="btn" href="#kontakt">Napište nám</a>
+      </div>
+      <svg class="ladder" viewBox="0 0 420 250" role="img" aria-label="Schéma žebříkového programu PLC se vstupy, výstupem a cívkou">
+        <line class="rail" x1="20" y1="14" x2="20" y2="236"/>
+        <line class="rail" x1="400" y1="14" x2="400" y2="236"/>
+        <!-- rung 1 -->
+        <path class="wire on pulse" d="M20 50 H110 M150 50 H400"/>
+        <path class="coil" d="M110 36 V64 M150 36 V64"/>
+        <path class="coil" d="M270 36 Q258 50 270 64 M300 36 Q312 50 300 64"/>
+        <text x="112" y="26">I0.0</text><text x="262" y="26">Q0.0</text>
+        <!-- rung 2 -->
+        <path class="wire" d="M20 125 H90 M130 125 H210 M250 125 H400"/>
+        <path class="rail" d="M90 111 V139 M130 111 V139"/>
+        <path class="rail" d="M210 111 V139 M250 111 V139"/><path class="rail" d="M205 146 L255 104"/>
+        <text x="92" y="101">I0.1</text><text x="212" y="101">M1.0</text>
+        <!-- rung 3 -->
+        <path class="wire" d="M20 200 H150 M250 200 H400"/>
+        <rect class="rail" x="150" y="176" width="100" height="48"/>
+        <text x="172" y="196">TON</text><text x="172" y="214">T#5s</text>
+        <text x="20" y="246">24 V DC</text>
+      </svg>
+    </div>
+  </div>
+
+  <section id="sluzby">
+    <div class="wrap">
+      <h2>Co děláme</h2>
+      <p class="sub">Čtyři oblasti, které na zakázce navazují jedna na druhou. Můžete si objednat jen tu, kterou potřebujete.</p>
+      <div class="services">
+        <article class="svc">
+          <span class="tag">PLC</span>
+          <h3>Software pro PLC</h3>
+          <p>Vývoj řídicích programů pro Simatic S7-300, S7-400, S7-1200 a S7-1500. Nový program i úpravy a rozšíření stávajícího.</p>
+        </article>
+        <article class="svc">
+          <span class="tag">HMI / SCADA</span>
+          <h3>Vizualizace</h3>
+          <p>Obrazovky pro obsluhu stroje nebo celé technologie. Přehledné alarmy, receptury a archivace dat.</p>
+        </article>
+        <article class="svc">
+          <span class="tag">Síť</span>
+          <h3>Návrh LAN</h3>
+          <p>Průmyslové sítě pro řídicí systémy. Návrh topologie, rozdělení do segmentů a spolehlivá komunikace mezi PLC, panely a servery.</p>
+        </article>
+        <article class="svc">
+          <span class="tag">Automatizace</span>
+          <h3>Automatizace procesů</h3>
+          <p>Analýza stávajícího řízení, návrh řešení, programování a uvedení do provozu na místě.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section id="technologie">
+    <div class="wrap">
+      <h2>Řídicí systémy, se kterými pracujeme</h2>
+      <p class="sub">Siemens Simatic od starších instalací po nejnovější generaci a také PLC Unitronics.</p>
+      <div class="plc-scroll">
+        <table class="plc">
+          <thead><tr><th>Řada</th><th>Použití</th></tr></thead>
+          <tbody>
+            <tr><td>S7-300</td><td>Servis a modernizace osvědčených instalací, programování v STEP 7.</td></tr>
+            <tr><td>S7-400</td><td>Rozsáhlé a náročné aplikace, včetně redundantních systémů.</td></tr>
+            <tr><td>S7-1200</td><td>Kompaktní řízení strojů a menších technologií, programování v TIA Portalu.</td></tr>
+            <tr><td>S7-1500</td><td>Výkonná platforma pro nové projekty, programování v TIA Portalu.</td></tr>
+            <tr><td>Unitronics</td><td>Kompaktní PLC s integrovaným operátorským panelem pro menší stroje a zařízení.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section id="kontakt">
+    <div class="wrap">
+      <h2>Kontakt</h2>
+      <p class="sub">Popište nám, co potřebujete vyřešit. Ozveme se s dotazy nebo s nabídkou.</p>
+      <div class="contact">
+        <div>
+          <div style="color:var(--muted);font-size:14px">E-mail</div>
+          <p class="mail" id="mail">info@inonex.cz</p>
+          <button class="copy" id="copy" type="button">Zkopírovat adresu</button>
+          <p style="margin:14px 0 0;font-size:14px"><a href="mailto:info@inonex.cz">Otevřít v e-mailovém programu</a></p>
+        </div>
+        <div>
+          <div style="color:var(--muted);font-size:14px;margin-bottom:10px">Firemní údaje</div>
+          <dl class="facts">
+            <dt>Společnost</dt><dd>INONEX Controls s.r.o.</dd>
+            <dt>IČO</dt><dd id="ico">301 03 894</dd>
+          </dl>
+          <p style="margin:16px 0 0;font-size:14px;color:var(--muted)">Společnost je zapsaná v obchodním rejstříku, spisová značka C 56568, vedeném Krajským soudem v Ústí nad Labem.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 INONEX Controls s.r.o.</span>
+    <span>Simatic je ochranná známka společnosti Siemens AG.</span>
+  </div>
+</footer>
+
+<script>
+(function () {
+  var btn = document.getElementById("copy");
+  btn.addEventListener("click", function () {
+    var text = "info@inonex.cz";
+    function done() { btn.textContent = "Zkopírováno"; setTimeout(function () { btn.textContent = "Zkopírovat adresu"; }, 1800); }
+    function fallback() {
+      var r = document.createRange(); r.selectNodeContents(document.getElementById("mail"));
+      var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+      btn.textContent = "Adresa je označená";
+    }
+    try { navigator.clipboard.writeText(text).then(done, fallback); } catch (e) { fallback(); }
+  });
+})();
+</script>
+
+</body></html>
